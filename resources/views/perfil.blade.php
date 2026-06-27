@@ -11,6 +11,7 @@
                 <div class="p-6 text-gray-900">
                     <p><strong>Nombre:</strong> {{ $user->name }}</p>
                     <p><strong>Correo:</strong> {{ $user->email }}</p>
+                    <p><strong>Teléfono:</strong> {{ $user->telefono }}</p>
                 </div>
             </div>
         </div>
