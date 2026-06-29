@@ -13,7 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'verificar.rol' => \App\Http\MiddlewareVerificarRol::class,
+            'solo.celular' => \App\Http\Middleware\SoloCelular::class,
+        ]);
+
+        $middleware->append(\App\Http\Middleware\RegistrarPeticion::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
