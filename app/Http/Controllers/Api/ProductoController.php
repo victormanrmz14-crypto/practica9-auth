@@ -8,19 +8,26 @@ use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        if (!$request->user()->tokenCan('ver')) {
+            return response()->json(['mensaje' => 'No tienes permiso para ver productos'], 403);
+        }
+
         return response()->json(Producto::all(), 200);
     }
 
     public function store(Request $request)
     {
+        if (!$request->user()->tokenCan('crear')) {
+            return response()->json(['mensaje' => 'No tienes permiso para crear productos'], 403);
+        }
+
         $data = $request->validate([
             'nombre' => ['required', 'string', 'max:150'],
             'descripcion' => ['nullable', 'string'],
             'precio' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
-            'activo' => ['sometimes', 'boolean'],
         ]);
 
         $producto = Producto::create($data);
@@ -28,19 +35,26 @@ class ProductoController extends Controller
         return response()->json($producto, 201);
     }
 
-    public function show(Producto $producto)
+    public function show(Request $request, Producto $producto)
     {
+        if (!$request->user()->tokenCan('ver')) {
+            return response()->json(['mensaje' => 'No tienes permiso para ver productos'], 403);
+        }
+
         return response()->json($producto, 200);
     }
 
     public function update(Request $request, Producto $producto)
     {
+        if (!$request->user()->tokenCan('editar')) {
+            return response()->json(['mensaje' => 'No tienes permiso para editar productos'], 403);
+        }
+
         $data = $request->validate([
             'nombre' => ['sometimes', 'required', 'string', 'max:150'],
             'descripcion' => ['nullable', 'string'],
             'precio' => ['sometimes', 'required', 'numeric', 'min:0'],
             'stock' => ['sometimes', 'required', 'integer', 'min:0'],
-            'activo' => ['sometimes', 'boolean'],
         ]);
 
         $producto->update($data);
@@ -48,8 +62,12 @@ class ProductoController extends Controller
         return response()->json($producto, 200);
     }
 
-    public function destroy(Producto $producto)
+    public function destroy(Request $request, Producto $producto)
     {
+        if (!$request->user()->tokenCan('eliminar')) {
+            return response()->json(['mensaje' => 'No tienes permiso para eliminar productos'], 403);
+        }
+
         $producto->delete();
 
         return response()->json([
